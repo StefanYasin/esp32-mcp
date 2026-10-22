@@ -145,6 +145,15 @@ python -m pytest
 
 88 tests covering the JSON-RPC layer, tool schemas and dispatch, the HTTP client, the simulator contract and the real subprocess stdio transport. No hardware and no network access required; the simulator binds to `127.0.0.1` on a random port.
 
+There is also a compatibility check against the official MCP Python SDK, which is a separate optional install:
+
+```bash
+python -m pip install mcp
+python scripts/interop_check.py
+```
+
+It starts the simulator, spawns the server through the SDK stdio client and checks the handshake, the tool list, a successful relay call and a rejected pin. I ran it against `mcp` 2.3.0 and it passes. It is not part of CI because the SDK would be a heavy dev dependency.
+
 ## Security
 
 The board API is plain HTTP with an optional shared token. That is fine on a trusted LAN and wrong on the public internet. Do not port forward the ESP32, and do not put this behind a public reverse proxy without TLS and real authentication.
@@ -159,6 +168,7 @@ Relays can switch mains voltage. Use an opto-isolated relay module, keep the mai
 - OTA firmware updates
 - A sketch compile job in CI. The ESP32 core is about a 1 GB download, so for now the check is a local compile
 - Newer MCP protocol revisions, the server pins `2024-11-05` for now
+- An interop job in CI against the official MCP SDK, the check currently runs by hand
 
 ## License
 
