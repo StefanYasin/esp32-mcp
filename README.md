@@ -10,7 +10,7 @@ I built this because most "AI controls hardware" demos hide a cloud service in t
 
 ## Status
 
-v0.1.0. The whole path works end to end against a simulated board: handshake, tool discovery, relay switching, sensor reads and GPIO reads and writes. The test suite runs without hardware. The firmware is written for the classic ESP32 and has not been compiled in CI yet, see Deferred.
+v0.1.0. The whole path works end to end against a simulated board: handshake, tool discovery, relay switching, sensor reads and GPIO reads and writes. The test suite runs without hardware. The sketch compiles for `esp32:esp32:esp32` with arduino-cli 1.4.1 and ESP32 core 3.3.12 (74% flash, 15% RAM). CI does not compile the sketch yet, see Deferred.
 
 ## What is in the box
 
@@ -55,7 +55,15 @@ curl -X POST http://esp32-mcp.local/relay/1/on
 curl "http://esp32-mcp.local/gpio?pin=2&value=1"
 ```
 
-Wiring, pin tables and the safety notes are in [docs/wiring.md](docs/wiring.md).
+The same thing from the command line, which is the path I used to check the sketch:
+
+```bash
+arduino-cli core install esp32:esp32
+arduino-cli compile --fqbn esp32:esp32:esp32 firmware/esp32_mcp
+arduino-cli upload --fqbn esp32:esp32:esp32 -p COM5 firmware/esp32_mcp
+```
+
+Swap `COM5` for your port. Wiring, pin tables and the safety notes are in [docs/wiring.md](docs/wiring.md).
 
 ## Connect an MCP client
 
@@ -149,7 +157,7 @@ Relays can switch mains voltage. Use an opto-isolated relay module, keep the mai
 - PWM and analog writes, servo control
 - Sensor drivers (DHT22, DS18B20, I2C) beyond the internal temperature and raw ADC channels
 - OTA firmware updates
-- A compile job for the sketch in CI, since the ESP32 core is a large download
+- A sketch compile job in CI. The ESP32 core is about a 1 GB download, so for now the check is a local compile
 - Newer MCP protocol revisions, the server pins `2024-11-05` for now
 
 ## License
